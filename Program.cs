@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 static void fun(int[,] adjacencyMatrix, string name)
 {
-    var thisPath = Directory.GetCurrentDirectory() + """\""";
+    var thisPath = Directory.GetCurrentDirectory() + "\\";
     string dotFilePath = name + "graph.dot";
     string imageFilePath = name + "graph.png";
 
@@ -14,25 +14,14 @@ static void fun(int[,] adjacencyMatrix, string name)
     {
         sw.WriteLine("graph G {");
         for (int i = 0; i < adjacencyMatrix.GetLength(0); i++)
-        {
-            var flag = true;
-            for (int k = 0; k < adjacencyMatrix.GetLength(1); k++)
-            {
-                if (adjacencyMatrix[i, k] > 0)
-                {
-                    flag = false;
-                    break;
-                }
-            }
+        {          
             for (int j = i + 1; j < adjacencyMatrix.GetLength(1); j++)
             {
                 if (adjacencyMatrix[i, j] > 0)
                 {
-                    sw.WriteLine($"{i} -- {j};");
+                    sw.WriteLine($"{i} -- {j} [label=\"{adjacencyMatrix[i, j]}\"];");
                 }
             }
-            if (flag)
-                sw.WriteLine($"{i} -- {i};");
         }
         sw.WriteLine("}");
     }
@@ -46,6 +35,7 @@ static void fun(int[,] adjacencyMatrix, string name)
     };
     Process.Start(startInfo);
     System.Threading.Thread.Sleep(1000);
+    
     // Запускаем изображение
     startInfo = new ProcessStartInfo
     {
