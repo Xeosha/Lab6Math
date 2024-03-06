@@ -1,7 +1,62 @@
 ﻿using Lab6Math;
 using System.Text;
 using Menu;
+using System.Diagnostics;
 
+static void fun(int[,] adjacencyMatrix, string name)
+{
+    var thisPath = Directory.GetCurrentDirectory() + """\""";
+    string dotFilePath = name + "graph.dot";
+    string imageFilePath = name + "graph.png";
+
+    // Создаем файл .dot для описания графа
+    using (var sw = new StreamWriter(dotFilePath))
+    {
+        sw.WriteLine("graph G {");
+        for (int i = 0; i < adjacencyMatrix.GetLength(0); i++)
+        {
+            var flag = true;
+            for (int k = 0; k < adjacencyMatrix.GetLength(1); k++)
+            {
+                if (adjacencyMatrix[i, k] > 0)
+                {
+                    flag = false;
+                    break;
+                }
+            }
+            for (int j = i + 1; j < adjacencyMatrix.GetLength(1); j++)
+            {
+                if (adjacencyMatrix[i, j] > 0)
+                {
+                    sw.WriteLine($"{i} -- {j};");
+                }
+            }
+            if (flag)
+                sw.WriteLine($"{i} -- {i};");
+        }
+        sw.WriteLine("}");
+    }
+
+    // Запускаем Graphviz для создания изображения
+    var startInfo = new ProcessStartInfo
+    {
+        FileName = "dot",
+        Arguments = $"-Tpng {dotFilePath} -o {imageFilePath}",
+        UseShellExecute = true
+    };
+    Process.Start(startInfo);
+    System.Threading.Thread.Sleep(1000);
+    // Запускаем изображение
+    startInfo = new ProcessStartInfo
+    {
+        FileName = thisPath + imageFilePath,
+        UseShellExecute = true
+    };
+
+    Process.Start(startInfo);
+
+    Console.WriteLine($"Граф создан и сохранен как {imageFilePath}");
+}
 
 static string[] GetNameTxtFiles()
 {
@@ -88,8 +143,9 @@ static void Print(int[,]? matrix)
 {
     if(matrix == null) 
         return;
-
-    Console.WriteLine(GetString(matrix)); 
+    
+    Console.WriteLine(GetString(matrix));
+    fun(matrix, "GRAPH.txt");
     PrintPrimaAlgorithm(matrix);
     PrintKruskalAlgorithm(matrix);
 }
