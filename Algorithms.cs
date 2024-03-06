@@ -22,58 +22,46 @@ namespace Lab6Math
         public static List<Edge> PrimMST(int[,] graph)
         {
             var result = new List<Edge>();
-            int n = graph.GetLength(0);
+            int V = graph.GetLength(0);
 
-            bool[] visited = new bool[n];
-            int[] parent = new int[n];
-            int[] key = new int[n];
+            int[] selected = new int[V];
+            Array.Fill(selected, 0);
 
-            for (int i = 0; i < n; i++)
+            int no_edge = 0;
+            selected[0] = 1;
+
+            int x, y;
+
+            while (no_edge < V - 1)
             {
-                key[i] = int.MaxValue;
-                visited[i] = false;
-            }
+                int min = int.MaxValue;
+                x = 0;
+                y = 0;
 
-            key[0] = 0;
-            parent[0] = -1;
-
-            for (int count = 0; count < n - 1; count++)
-            {
-                int u = MinKey(key, visited);
-                visited[u] = true;
-
-                for (int v = 0; v < n; v++)
+                for (int i = 0; i < V; i++)
                 {
-                    if (graph[u, v] != 0 && !visited[v] && graph[u, v] < key[v])
+                    if (selected[i] != 0)
                     {
-                        parent[v] = u;
-                        key[v] = graph[u, v];
+                        for (int j = 0; j < V; j++)
+                        {
+                            if (selected[j] == 0 && graph[i, j] != 0)
+                            {
+                                if (min > graph[i, j])
+                                {
+                                    min = graph[i, j];
+                                    x = i;
+                                    y = j;
+                                }
+                            }
+                        }
                     }
                 }
+                result.Add(new Edge { Source = x, Destination = y, Weight = graph[x, y] });
+                selected[y] = 1;
+                no_edge++;
             }
 
-            for (int i = 1; i < n; i++)
-                result.Add(new Edge { Source = parent[i], Destination = i, Weight = graph[i, parent[i]] });
-
-            return result;
-        }
-
-        private static int MinKey(int[] key, bool[] visited)
-        {
-            int min = int.MaxValue;
-            int minIndex = -1;
-            int n = key.Length;
-
-            for (int v = 0; v < n; v++)
-            {
-                if (!visited[v] && key[v] < min)
-                {
-                    min = key[v];
-                    minIndex = v;
-                }
-            }
-
-            return minIndex;
+            return result; 
         }
     }
 

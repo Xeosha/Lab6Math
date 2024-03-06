@@ -179,3 +179,5 @@ dialog.AddOption("Вывод алгоритмов", () => Print(matrix));
 dialog.Start();
 
 
+
+
